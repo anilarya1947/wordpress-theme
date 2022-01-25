@@ -637,3 +637,26 @@ function twentytwentyone_add_ie_class() {
 	<?php
 }
 add_action( 'wp_footer', 'twentytwentyone_add_ie_class' );
+
+
+add_filter( 'body_class', 'my_neat_body_class');
+function my_neat_body_class( $classes ) {
+     if ( is_page(10677))
+          $classes[] = 'neat-stuff';
+ 
+     return $classes; 
+}
+wp_enqueue_script( 'my-ajax-request', plugin_dir_url( __FILE__ ) . 'js/ajax.js', array( 'jquery' ) );
+wp_localize_script( 'my-ajax-request', 'MyAjax', array( 'ajaxurl' => admin_url( '/admin-ajax.php' ) ) );
+add_action('wp_ajax_load-content', 'my_load_ajax_content'); // for users logged-in
+add_action('wp_ajax_nopriv_load-content', 'my_load_ajax_content');//for users that are not logged in.
+    function my_load_ajax_content () {
+        $post_id = $_POST[ 'post_id' ];
+
+        $post = get_post($post_id);
+              $response = '<h3>' .$post->post_title. '</h3>';
+          $response .= apply_filters( 'the_content', $post->post_content );
+
+        echo $response;
+        die(1);
+    }
